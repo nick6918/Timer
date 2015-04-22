@@ -5,26 +5,40 @@ from datetime import datetime, timedelta
 from time import mktime,sleep
 from BeautifulSoup import BeautifulSoup, NavigableString
 from TimerModel import TimerModel
+from daemonize import Daemonize
 
 logger = logging.getLogger('appserver')
+
+fh = logging.FileHandler("timer.log", "w")
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+fh.setFormatter(formatter)
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
+logger = logging.getLogger('jobs')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 def Timer():
 	lastDate = "2015-01-01"
 	while(True):
 		logger.debug("LOOP STARTED AT "+datetime.now().strftime("%T"))
-		curDate = datetime.now()
-		nextDate = curDate+timedelta(1)
-		curStamp = mktime(curDate.timetuple())
-		nextDateString = nextDate.strftime("%Y-%m-%d")
-		curDateString = curDate.strftime("%Y-%m-%d")
-		(year, month, day) = curDateString.split("-")
-		if curDateString != lastDate:
-			lastDate = curDateString
-			queryLiveList(nextDateString)
-		else:
-			TimerModel().clear_day_item(curDate)
-			queryLiveList(curDateString)
-			TimerModel().new_info_item(datetime(year=int(year), month=int(month), day=int(day), hour=0, minute=0,second=1), "GameLive", "Game", "http://v.pptv.com/show/QxRz8VmicL23QTrY.html")
+		try:
+			curDate = datetime.now()
+			nextDate = curDate+timedelta(1)
+			curStamp = mktime(curDate.timetuple())
+			nextDateString = nextDate.strftime("%Y-%m-%d")
+			curDateString = curDate.strftime("%Y-%m-%d")
+			(year, month, day) = curDateString.split("-")
+			if curDateString != lastDate:
+				lastDate = curDateString
+				queryLiveList(nextDateString)
+			else:
+				TimerModel().clear_day_item(curDate)
+				queryLiveList(curDateString)
+				TimerModel().new_info_item(datetime(year=int(year), month=int(month), day=int(day), hour=0, minute=0,second=1), "GameLive", "Game", "http://v.pptv.com/show/QxRz8VmicL23QTrY.html")
+		except Exception, e:
+			logger.error(e)
+			break
 		logger.debug("LOOP FINISHED AT "+datetime.now().strftime("%T"))
 		sleep(20)
 	logger.error("TIMER CEASED")
@@ -52,9 +66,6 @@ def queryLiveList(date):
 	else:
 		logger.debug("NOT MATCHED")
 	soup = BeautifulSoup(finalContent)
-	fp=open("page.html", "w+")
-	fp.write(soup.prettify())
-	fp.close()
 	htmlList =  soup.table.contents
 	(year, month, day) = date.split("-")
 	for tr in htmlList:
@@ -85,4 +96,8 @@ def queryLiveList(date):
 		else:
 			TimerModel().new_info_item(startTime, title, name, None)
 
-Timer()
+if __name__=='__main__':
+	pid="timer.pid"
+	keep_fds = [fh.stream.fileno()]
+	daemon = Daemonize(app="jobs", pid=pid, action=Timer, keep_fds=keep_fds)
+	daemon.start()
