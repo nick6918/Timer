@@ -35,7 +35,7 @@ def Timer():
 			else:
 				TimerModel().clear_day_item(curDate)
 				queryLiveList(curDateString)
-				TimerModel().new_info_item(datetime(year=int(year), month=int(month), day=int(day), hour=0, minute=0,second=1), "GameLive", "Game", "http://v.pptv.com/show/QxRz8VmicL23QTrY.html")
+				TimerModel().new_info_item(datetime(year=int(year), month=int(month), day=int(day), hour=0, minute=0,second=1), u"游戏直播频道", u"游戏", "http://v.pptv.com/show/QxRz8VmicL23QTrY.html")
 		except Exception, e:
 			logger.error(e)
 			break
@@ -85,9 +85,11 @@ def queryLiveList(date):
 		if isinstance(temp, NavigableString):
 			title = temp
 		else:
-			temp = temp.contents[0]
-			if isinstance(temp, NavigableString):
-				title = temp
+			titleOne = temp.contents[0]
+			if isinstance(titleOne, NavigableString):
+				titleTwo = temp.contents[2].text
+				titleThree = temp.contents[6].text
+				title = titleOne + "  " + titleTwo +"  VS  "+titleThree
 			else:
 				title = ""
 		logger.debug(("#LIVE#", startTime, name, title))
@@ -101,3 +103,5 @@ if __name__=='__main__':
 	keep_fds = [fh.stream.fileno()]
 	daemon = Daemonize(app="jobs", pid=pid, action=Timer, keep_fds=keep_fds)
 	daemon.start()
+# 	
+# queryLiveList("2015-04-22")
