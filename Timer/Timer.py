@@ -11,7 +11,7 @@ logger = logging.getLogger('appserver')
 def Timer():
 	lastDate = "2015-04-22"
 	while(True):
-		print "LOOP STARTED AT ", datetime.now().strftime("%T")
+		logger.debug("LOOP STARTED AT "+datetime.now().strftime("%T"))
 		curDate = datetime.now()
 		nextDate = curDate+timedelta(1)
 		curStamp = mktime(curDate.timetuple())
@@ -25,9 +25,9 @@ def Timer():
 			TimerModel().clear_day_item(curDate)
 			queryLiveList(curDateString)
 			TimerModel().new_info_item(datetime(year=int(year), month=int(month), day=int(day), hour=0, minute=0,second=1), "GameLive", "Game", "http://v.pptv.com/show/QxRz8VmicL23QTrY.html")
-		print "LOOP FINISHED AT ", datetime.now().strftime("%T")
+		logger.debug("LOOP FINISHED AT "+datetime.now().strftime("%T"))
 		sleep(20)
-	print "Done"
+	logger.error("TIMER CEASED")
 
 def queryLiveList(date):
 	req = urllib2.Request("http://live.pptv.com/api/subject_list?cb=load.cbs.cbcb_4&date="+date+"&type=35&tid=&cid=&offset=0", headers={
@@ -50,7 +50,7 @@ def queryLiveList(date):
 		postContent = "</body></html>"
 		finalContent = preContent + content + postContent
 	else:
-		print "not matched"
+		logger.debug("NOT MATCHED")
 	soup = BeautifulSoup(finalContent)
 	fp=open("page.html", "w+")
 	fp.write(soup.prettify())
