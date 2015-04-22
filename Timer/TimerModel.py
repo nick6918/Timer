@@ -2,6 +2,7 @@
 import MySQLdb
 from time import mktime
 from datetime import datetime
+from ast import literal_eval
 import logging
 from utils import SQLINFO
 
@@ -28,7 +29,7 @@ class TimerModel(object):
 		hash_ = 0
 		for char in temp:
 			if char in ALPHABET:
-				ind = 23+ALPHABET.index(char)
+				ind = 23 + ALPHABET.index(char)
 				hash_ += ind
 		hash_ += (time % 100000) * 10000
 		return hash_
@@ -36,11 +37,13 @@ class TimerModel(object):
 	def new_info_item(self, dtime, title, name, url):
 		timeCode = mktime(dtime.timetuple())
 		hashValue = self.hashName(name+title, timeCode)
+		name = literal_eval("u'%s'" % name)
+		title = literal_eval("u'%s'" % title)
 		timeValue = dtime.strftime("%T")
 		dateValue = dtime.strftime("%Y-%m-%d")
 		if not url:
 			exe_string = "INSERT INTO live_daylist(name, title, ctime, dtime, datetime, hash) Values(%s, %s, %s, %s, %s, %s)"
-			self.cursor.execute(exe_string, (name.encode('utf-8'), title.encode('gbk'), timeCode, timeValue, dateValue, hashValue))
+			self.cursor.execute(exe_string, (name, title, timeCode, timeValue, dateValue, hashValue))
 		else:
 			search_string = "SELECT vid FROM m3u8live WHERE date = %s and hashval = %s"
 			self.cursor.execute(search_string, (dateValue, hashValue))
@@ -54,11 +57,11 @@ class TimerModel(object):
 				if one:
 					vid = one[0]
 					exe_string = "INSERT INTO live_daylist(name, title, ctime, dtime, datetime, hash, vid) Values(%s, %s, %s, %s, %s, %s, %s)"
-					self.cursor.execute(exe_string, (name.encode('utf-8'), title.encode('gbk'), timeCode, timeValue, dateValue, hashValue, vid))
+					self.cursor.execute(exe_string, (name, title, timeCode, timeValue, dateValue, hashValue, vid))
 			else:
 				vid = info[0]
 				exe_string = "INSERT INTO live_daylist(name, title, ctime, dtime, datetime, hash, vid) Values(%s, %s, %s, %s, %s, %s, %s)"
-				self.cursor.execute(exe_string, (name.encode('utf-8'), title.encode('gbk'), timeCode, timeValue, dateValue, hashValue, vid))
+				self.cursor.execute(exe_string, (name, title, timeCode, timeValue, dateValue, hashValue, vid))
 	
 	def clear_day_item(self, date):
 		ddate = date.strftime("%Y-%m-%d")

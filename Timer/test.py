@@ -1,11 +1,7 @@
+# -*- coding: utf-8 -*-
 import re
 
-htmlString = "dskjfgjhksdhttp://v.pptv.com/show/MVV9ibmLIOHbZV78.htmlskdhksdjafh"
+ss = "\u5c0f\u7ec4\u8d5b\u7b2c"
+ss = ss.decode('utf-8')
 
-pattern = re.compile(r"http[s]?\:\/\/[a-zA-Z0-9]*\.pptv\.com\/[a-zA-Z0-9\/]*\.html")
-
-matcher = pattern.search(htmlString)
-if matcher:
-	print matcher.group()
-else:
-	print "Not catched"
+print ss
