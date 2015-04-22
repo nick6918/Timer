@@ -22,6 +22,7 @@ def Timer():
 	lastDate = "2015-01-01"
 	while(True):
 		logger.debug("LOOP STARTED AT "+datetime.now().strftime("%T"))
+		logger.debug("GLOBAL DATE"+lastDate)
 		try:
 			curDate = datetime.now()
 			nextDate = curDate+timedelta(1)
