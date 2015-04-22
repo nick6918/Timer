@@ -1,3 +1,7 @@
 # Timer
 
-SPIDER FOR PPTV SPORTS AND GAME LIVE, PLEASE DO NOT USE IT FOR COMMERCIAL USE.
+Spider for pptv game and sports live, please DO NOT use it for commercial use.
+
+Third party python module:
+
+BeautifulSoup
