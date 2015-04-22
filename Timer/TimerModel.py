@@ -3,6 +3,7 @@ import MySQLdb
 from time import mktime
 from datetime import datetime
 import logging
+from utils import SQLINFO
 
 logger = logging.getLogger('appserver')
 
@@ -10,7 +11,7 @@ class TimerModel(object):
 
 	def __init__(self):
 		super(TimerModel, self).__init__()  
-		conn=MySQLdb.connect(host="127.0.0.1",user="root",passwd="",db="yqc", charset="utf8")  
+		conn=MySQLdb.connect(host=SQLINFO["HOST"],user="root",passwd=SQLINFO["PASSWORD"],db=SQLINFO["DB"], charset="utf8")  
 		self.cursor = conn.cursor() 
 
 	def encodeString(self, pd_name):
