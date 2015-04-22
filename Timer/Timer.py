@@ -9,7 +9,7 @@ from TimerModel import TimerModel
 logger = logging.getLogger('appserver')
 
 def Timer():
-	lastDate = "2015-04-22"
+	lastDate = "2015-01-01"
 	while(True):
 		logger.debug("LOOP STARTED AT "+datetime.now().strftime("%T"))
 		curDate = datetime.now()
